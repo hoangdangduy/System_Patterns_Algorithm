@@ -1,5 +1,8 @@
 package _2_Add_Two_Number;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 // https://leetcode.com/problems/add-two-numbers/description/
 public class ListNode {
     int val;
@@ -16,17 +19,39 @@ public class ListNode {
         this.val = val;
         this.next = next;
     }
-
-    public int getVal() {
-        return val;
-    }
 }
 
 class Solution {
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         l1 = reverse(l1);
         l2 = reverse(l2);
-        return null;
+
+        int module = (l1.val + l2.val) % 10;
+        int division = (l1.val + l2.val) / 10;
+        ListNode result = new ListNode(module);
+        while((l1 != null && l1.next != null)
+                || (l2 != null && l2.next != null)
+                || division != 0) {
+            l1 = getNext(l1);
+            l2 = getNext(l2);
+
+            module = (getValue(l1) + getValue(l2) + division) % 10;
+            division = (getValue(l1) + getValue(l2) + division) / 10;
+            ListNode newNode = result;
+            while (newNode.next != null) {
+                newNode = newNode.next;
+            }
+            newNode.next = new ListNode(module);
+        }
+        return result;
+    }
+
+    private static ListNode getNext(ListNode l) {
+        return l != null ? l.next : null;
+    }
+
+    private static int getValue(ListNode l) {
+        return Objects.isNull(l) ? 0 : l.val;
     }
 
     private static ListNode reverse(ListNode args) {
@@ -41,25 +66,27 @@ class Solution {
     }
 
     public static void main(String[] args) {
-        // generate ListNode l1
-        ListNode l1 = new ListNode(2);
-        ListNode l1_2 = new ListNode(4);
-        ListNode l1_3 = new ListNode(3);
-        l1.next = l1_2;
-        l1_2.next = l1_3;
+        ListNode l1 = new ListNode(9);
+        ListNode l2 = new ListNode(9);
 
-        // generate ListNode l2
-        ListNode l2 = new ListNode(5);
-        ListNode l2_2 = new ListNode(6);
-        ListNode l2_3 = new ListNode(4);
-        l2.next = l2_2;
-        l2_2.next = l2_3;
+        ListNode node1 = new ListNode(9);
+        ListNode node2 = new ListNode(9);
+        ListNode node3 = new ListNode(9);
+        ListNode node4 = new ListNode(9);
+        ListNode node5 = new ListNode(9);
+        ListNode node6 = new ListNode(9);
 
-        l1 = reverse(l1);
-        l2 = reverse(l2);
+        l1.next = node1;
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        node4.next = node5;
+        node5.next = node6;
 
-        System.out.println("ok");
+        l2.next = new ListNode(9);
+        l2.next.next = new ListNode(9);
+        l2.next.next.next = new ListNode(9);
 
-
+        addTwoNumbers(l1, l2);
     }
 }
