@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class XORLinkedList {
-    private static Node head;
-    private static Node tail;
-    private static Map<Integer, Node> map = new HashMap<>();
+    private Node head;
+    private Node tail;
+    private Map<Integer, Node> map = new HashMap<>();
 
     public void insert(String value) {
         Node newNode = new Node(value);
@@ -46,36 +46,35 @@ public class XORLinkedList {
 
     public void delete(String value) {
         Node current = head;
-        Node nodeBefore = null;
+        Node previous = null;
+
         while (current != null) {
+            Node next = map.get(current.getNp() ^ getAddress(previous));
+
             if (Objects.equals(current.getValue(), value)) {
-                Node nodeNext = map.get(current.getNp() ^ getAddress(nodeBefore));
-                Node nodeNextNext = nodeNext == null ? null : map.get(getAddress(current) ^ nodeNext.getNp());
-                Node nodeBeforeBefore = nodeBefore == null ? null : map.get(getAddress(current) ^ getNP(nodeBefore));
-                map.remove(getAddress(current));
-                if (nodeNext != null) {
-                    nodeNext.setNp(getAddress(nodeNextNext) ^ getAddress(nodeBefore));
+                Node nextNext = next == null ? null : map.get(getAddress(current) ^ next.getNp());
+                Node previousPrevious = previous == null ? null : map.get(getAddress(current) ^ previous.getNp());
+
+                if (next != null) {
+                    next.setNp(getAddress(nextNext) ^ getAddress(previous));
                 }
-                if (nodeBefore != null) {
-                    nodeBefore.setNp(getAddress(nodeBeforeBefore) ^ getAddress(nodeNext));
+                if (previous != null) {
+                    previous.setNp(getAddress(previousPrevious) ^ getAddress(next));
                 }
 
                 if (current == head) {
-                    head = nodeNext;
+                    head = next;
                 }
                 if (current == tail) {
-                    tail = nodeBefore;
+                    tail = previous;
                 }
+
+                map.remove(getAddress(current));
+            } else {
+                previous = current;
             }
 
-            if (current == head) {
-                nodeBefore = current;
-                current = map.get(current.getNp());
-            } else {
-                int address = getAddress(nodeBefore);
-                nodeBefore = current;
-                current = map.get(current.getNp() ^ address);
-            }
+            current = next;
         }
     }
 
