@@ -5,79 +5,72 @@ import java.util.Objects;
 // https://leetcode.com/problems/regular-expression-matching/
 public class Solution {
     public boolean isMatch(String s, String p) {
-            int firstStar = p.indexOf("*");
+        int firstStar = p.indexOf("*");
 
-            if (s.length() == 0) {
+        if (firstStar == -1) {
+            if (s.length() != p.length()) {
                 return false;
             }
 
-            for (int i = 0; i < firstStar - 1; i++) {
+            for (int i = 0; i < s.length(); i++) {
                 if (s.charAt(i) != p.charAt(i) && p.charAt(i) != '.') {
                     return false;
                 }
             }
-
-            if (firstStar == -1) {
-                int i = 0;
-                int j = 0;
-                while (i < s.length() && j < p.length()) {
-                    switch (p.charAt(j)) {
-                        case '.':
-                            i++;
-                            j++;
-                            break;
-                        default:
-                            if (s.charAt(i) != p.charAt(j)) {
-                                return false;
-                            }
-                            i++;
-                            j++;
-                    }
-                }
-                return i == s.length() && j == p.length();
-            } else {
-                int i = firstStar-1;
-                if (p.charAt(i) == '.') {
-                    if (firstStar == p.length() - 1) {
-                        return true;
-                    }
-                    char charAfterStar = p.charAt(firstStar + 1);
-                    int j = 0;
-                    while (j < s.length() && s.charAt(j) != charAfterStar) {
-                        j++;
-                    }
-                    var sNew = s.substring(j);
-                    var pNew = p.substring(firstStar + 1);
-                    return isMatch(sNew, pNew);
-                } else {
-                    char charBeforeStar = p.charAt(i) == '.' ? s.charAt(i) : p.charAt(i);
-                    if (!Objects.equals(s.substring(0, i), p.substring(0, i))) {
-                        return false;
-                    }
-                    do {
-                        var sNew = s.substring(i);
-                        var pNew = p.substring(firstStar + 1);
-                        var result = isMatch(sNew, pNew);
-                        if (result) {
-                            return true;
-                        }
-                    } while (i < s.length() && s.charAt(i++) == charBeforeStar);
-                }
-
+            return true;
+        } else {
+            int i = firstStar - 1;
+            if (isNonMatchStart(s, p, firstStar - 1)) {
                 return false;
             }
+            if (Character.isAlphabetic(p.charAt(firstStar - 1))) {
+                do {
+                    boolean match = isMatch(s.substring(i), p.substring(firstStar + 1));
+                    if (match) {
+                        return true;
+                    }
+                } while (i < s.length() && s.charAt(i++) == p.charAt(firstStar - 1));
+            } else if (p.charAt(firstStar - 1) == '.') {
+                while (i <= s.length()) {
+                    boolean match = isMatch(s.substring(i), p.substring(firstStar + 1));
+                    if (match) {
+                        return true;
+                    }
+                    i++;
+                }
+            }
+        }
+        return false;
     }
 
+    private boolean isNonMatchStart(String s, String p, int endIndex) {
+        if (endIndex > s.length()) {
+            return true;
+        }
+
+        int i = 0;
+        while (i < endIndex) {
+            if (s.charAt(i) != p.charAt(i) && p.charAt(i) != '.') {
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
+
     public static void main(String[] args) {
-//        System.out.println(new Solution().isMatch("aa", "a")); // false
+        System.out.println(new Solution().isMatch("aa", "a")); // false
         System.out.println(new Solution().isMatch("aa", "a*")); // true
-//        System.out.println(new Solution().isMatch("ab", ".*")); // true
-//        System.out.println(new Solution().isMatch("aab", "c*a*b")); // true
-//        System.out.println(new Solution().isMatch("ab", ".*c")); // false
-//        System.out.println(new Solution().isMatch("ab", ".*c")); // false
-//        System.out.println(new Solution().isMatch("aaa", "a*a")); // true
-//        System.out.println(new Solution().isMatch("mississippi", "mis*is*p*.")); // false
-//        System.out.println(new Solution().isMatch("ippi", "p*.")); // false
-//        System.out.println(new Solution().isMatch("a", ".*..a*")); // false
+        System.out.println(new Solution().isMatch("ab", ".*")); // true
+        System.out.println(new Solution().isMatch("aab", "c*a*b")); // true
+        System.out.println(new Solution().isMatch("ab", ".*c")); // false
+        System.out.println(new Solution().isMatch("ab", ".*c")); // false
+        System.out.println(new Solution().isMatch("aaa", "a*a")); // true
+        System.out.println(new Solution().isMatch("mississippi", "mis*is*p*.")); // false
+        System.out.println(new Solution().isMatch("ippi", "p*.")); // false
+        System.out.println(new Solution().isMatch("a", ".*..a*")); // false
+        System.out.println(new Solution().isMatch("a", "ab*a")); // false
+        System.out.println(new Solution().isMatch("ab", ".*..c*")); // true
     }
 }
