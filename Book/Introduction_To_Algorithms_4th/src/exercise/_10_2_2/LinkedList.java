@@ -1,4 +1,4 @@
-package _10_2_5;
+package exercise._10_2_2;
 
 public class LinkedList {
     private String key;

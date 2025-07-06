@@ -4,7 +4,23 @@ import java.util.Objects;
 
 // https://leetcode.com/problems/regular-expression-matching/
 public class Solution {
+
     public boolean isMatch(String s, String p) {
+        Boolean[][] memoryMard = new Boolean[s.length() + 1][p.length() + 1];
+        for (int i = 0; i <= s.length(); i++) {
+            for (int j = 0; j <= p.length(); j++) {
+                memoryMard[i][j] = null;
+            }
+        }
+        return isMatch(s, p, memoryMard);
+
+    }
+
+    private boolean isMatch(String s, String p, Boolean[][] memoryMard) {
+        if (memoryMard[s.length()][p.length()] != null) {
+            return memoryMard[s.length()][p.length()];
+        }
+
         int firstStar = p.indexOf("*");
 
         if (firstStar == -1) {
@@ -23,16 +39,24 @@ public class Solution {
             if (isNonMatchStart(s, p, firstStar - 1)) {
                 return false;
             }
+            String sChild;
+            String pChild;
             if (Character.isAlphabetic(p.charAt(firstStar - 1))) {
                 do {
-                    boolean match = isMatch(s.substring(i), p.substring(firstStar + 1));
+                    sChild = s.substring(i);
+                    pChild = p.substring(firstStar + 1);
+                    boolean match = isMatch(sChild, pChild, memoryMard);
+                    memoryMard[sChild.length()][pChild.length()] = match;
                     if (match) {
                         return true;
                     }
                 } while (i < s.length() && s.charAt(i++) == p.charAt(firstStar - 1));
             } else if (p.charAt(firstStar - 1) == '.') {
                 while (i <= s.length()) {
-                    boolean match = isMatch(s.substring(i), p.substring(firstStar + 1));
+                    sChild = s.substring(i);
+                    pChild = p.substring(firstStar + 1);
+                    boolean match = isMatch(sChild, pChild, memoryMard);
+                    memoryMard[sChild.length()][pChild.length()] = match;
                     if (match) {
                         return true;
                     }

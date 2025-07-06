@@ -1,6 +1,4 @@
-package _10_2_2;
-
-import java.util.Objects;
+package exercise._10_2_2;
 
 public class Stack {
     private LinkedList stack;

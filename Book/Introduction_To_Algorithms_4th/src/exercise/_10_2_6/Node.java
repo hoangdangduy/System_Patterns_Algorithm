@@ -1,4 +1,4 @@
-package _10_2_6;
+package exercise._10_2_6;
 
 public class Node {
     private String value;
